@@ -17,6 +17,15 @@ class User < ApplicationRecord
 
   alias :urls :submitted_urls
 
+   has_many :visits,
+    primary_key: :id,
+    foreign_key: :user_id,
+    class_name: :Visit
+
+  has_many :visited_urls,
+    through: :visits,
+    source: :url
+
   # has_many :urls,
   #   primary_key: :id,
   #   foreign_key: :user_id,

@@ -19,6 +19,15 @@ class ShortenedUrl < ApplicationRecord
     foreign_key: :user_id,
     class_name: :User
 
+  has_many :visits,
+    primary_key: :id,
+    foreign_key: :url_id,
+    class_name: :Visit
+
+  has_many :visitors,
+    through: :visits,
+    source: :user
+
   alias :user :submitter
 
   # belongs_to :user,
@@ -38,5 +47,18 @@ class ShortenedUrl < ApplicationRecord
 
   def self.random_code
     SecureRandom.urlsafe_base64
+  end
+
+  def num_clicks
+    self.visits.count
+  end
+
+  def num_uniques
+    self.visitors.uniq.count
+  end
+
+  def num_recent_uniques
+    p self.visitors.distinct
+    self.visitors.distinct.where(created_at: (Time.now - 10.minute)..Time.now).count
   end
 end
